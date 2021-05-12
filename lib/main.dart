@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dilidili/http/core/hi_net.dart';
+import 'package:flutter_dilidili/page/registration_page.dart';
+import 'package:flutter_dilidili/requset/notice_request.dart';
+import 'package:flutter_dilidili/util/color.dart';
 
 import 'db/hi_cache.dart';
 import 'http/core/hi_error.dart';
@@ -15,18 +19,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: white),
+      home: RegistrationPage(),
     );
   }
 }
@@ -52,9 +55,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    HiCache.preInit();
+  }
+
   void _incrementCounter() {
     //test2();
-    testLogin();
+    //testLogin();
+    //test2();
+    testNotice();
     // setState(() {
     //   // This call to setState tells the Flutter framework that something has
     //   // changed in this State, which causes it to rerun the build method below
@@ -67,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void testLogin() async {
     try {
-      var result = await LoginDao.login("test", "rootroot");
+      dynamic result = await LoginDao.login("test", "rootroot");
       // var result2 =
       //     await LoginDao.registration("test", "rootroot", "8448121", "3923");
       print(result);
@@ -82,9 +94,21 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void test2() {
-    HiCache.getHicache.setString("aa", "1234");
-    var value = HiCache.getHicache.get("aa");
+  void testNotice() async {
+    try {
+      dynamic notice = await Hinet.gethinetInstance.fire(NoticeRequest());
+      print(notice);
+    } on NeedAuth catch (e) {
+      print(e.message);
+    } on NeedLogin catch (e) {
+      print(e.message);
+    } on HiNetError catch (e) {
+      print(e.message);
+    }
+  }
+
+  void test2() async {
+    var value = await LoginDao.getBoardingPass();
     print(value);
   }
 

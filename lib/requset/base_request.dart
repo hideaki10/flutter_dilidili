@@ -1,3 +1,5 @@
+import 'package:flutter_dilidili/http/dao/login_dao.dart';
+
 enum HttpMethod {
   GET,
   POST,
@@ -34,6 +36,11 @@ abstract class BaseRequest {
     } else {
       uri = Uri.http(anthority(), pathStr, params);
     }
+
+    if (needLogin()) {
+      addHeader(LoginDao.BOARDING_PASS, LoginDao.getBoardingPass());
+    }
+
     print('url:${uri.toString()}');
     return uri.toString();
   }
