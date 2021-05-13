@@ -80,8 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void testLogin() async {
     try {
       dynamic result = await LoginDao.login("test", "rootroot");
-      // var result2 =
-      //     await LoginDao.registration("test", "rootroot", "8448121", "3923");
+
       print(result);
       //var result2 = await LoginDao.login("test", "rootroot");
       //print(result2);
