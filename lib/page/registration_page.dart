@@ -3,13 +3,13 @@ import 'package:flutter_dilidili/http/core/hi_error.dart';
 import 'package:flutter_dilidili/http/dao/login_dao.dart';
 import 'package:flutter_dilidili/util/string_util.dart';
 import 'package:flutter_dilidili/widget/appbar.dart';
+import 'package:flutter_dilidili/widget/login_button.dart';
 import 'package:flutter_dilidili/widget/login_effect.dart';
 import 'package:flutter_dilidili/widget/login_input.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final VoidCallback? onJumptoLogin;
-
   const RegistrationPage({Key? key, this.onJumptoLogin}) : super(key: key);
+  final VoidCallback? onJumptoLogin;
 
   @override
   _RegiState createState() => _RegiState();
@@ -17,7 +17,7 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegiState extends State<RegistrationPage> {
   bool protect = false;
-  bool loginEable = false;
+  bool loginEnable = false;
   String? userName;
   String? password;
   String? rePassword;
@@ -26,7 +26,7 @@ class _RegiState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar("register", "login", widget.onJumptoLogin!),
+      appBar: appBar('register', 'login', widget.onJumptoLogin!),
       body: Container(
         child: ListView(
           children: [
@@ -36,20 +36,18 @@ class _RegiState extends State<RegistrationPage> {
             LoginInput(
               hint: 'input you name',
               title: 'user',
-              onChanged: (text) {
+              onChanged: (String text) {
                 userName = text;
-                checkInput();
               },
-              focusChanged: (focus) {},
+              focusChanged: (_) {},
             ),
             LoginInput(
               hint: 'input you password',
               title: 'password',
-              onChanged: (text) {
+              onChanged: (String text) {
                 password = text;
-                checkInput();
               },
-              focusChanged: (focus) {
+              focusChanged: (bool focus) {
                 setState(() {
                   protect = focus;
                 });
@@ -58,11 +56,10 @@ class _RegiState extends State<RegistrationPage> {
             LoginInput(
               hint: 'input you password',
               title: 'password',
-              onChanged: (text) {
+              onChanged: (String text) {
                 rePassword = text;
-                checkInput();
               },
-              focusChanged: (focus) {
+              focusChanged: (bool focus) {
                 setState(() {
                   protect = focus;
                 });
@@ -71,30 +68,26 @@ class _RegiState extends State<RegistrationPage> {
             LoginInput(
               hint: 'input you imoocId',
               title: 'imoocid',
-              onChanged: (text) {
+              onChanged: (String text) {
                 imoocId = text;
-                checkInput();
               },
               keyboardType: TextInputType.number,
-              focusChanged: (focus) {},
+              focusChanged: (_) {},
             ),
             LoginInput(
               hint: 'input you orderId',
               title: 'orderId',
               keyboardType: TextInputType.number,
-              onChanged: (text) {
+              onChanged: (String text) {
                 orderId = text;
                 checkInput();
               },
-              focusChanged: (focus) {},
+              focusChanged: (bool focus) {},
             ),
             Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                left: 20,
-                right: 20,
-              ),
-              child: _loginButton(),
+              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              child: LoginButton(
+                  title: '注册', enable: loginEnable, onPressed: checkParams),
             ),
           ],
         ),
@@ -114,30 +107,17 @@ class _RegiState extends State<RegistrationPage> {
       _enable = false;
     }
     setState(() {
-      loginEable = _enable;
+      loginEnable = _enable;
     });
-  }
-
-  _loginButton() {
-    return InkWell(
-      onTap: () {
-        if (loginEable) {
-          checkParam();
-        } else {
-          print("loginEbable is false");
-        }
-      },
-      child: Text('zhuce'),
-    );
   }
 
   Future<void> send() async {
     try {
-      dynamic result =
-          await LoginDao.registration("test", "rootroot", "8448121", "3923");
+      final dynamic result =
+          await LoginDao.registration('test', 'rootroot', '8448121', '3923');
       print(result);
-      if (result["code"] == 0) {
-        print("success");
+      if (result['code'] == 0) {
+        print('success');
         if (widget.onJumptoLogin != null) {
           widget.onJumptoLogin!;
         }
@@ -151,12 +131,12 @@ class _RegiState extends State<RegistrationPage> {
     }
   }
 
-  void checkParam() {
+  void checkParams() {
     String? tips;
     if (password != password) {
-      tips = "liangci";
+      tips = 'liangci';
     } else if (orderId!.length != 4) {
-      tips = "dadd";
+      tips = 'dadd';
     }
     if (tips != null) {
       return;
