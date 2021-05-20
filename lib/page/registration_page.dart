@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dilidili/http/core/hi_error.dart';
 import 'package:flutter_dilidili/http/dao/login_dao.dart';
+import 'package:flutter_dilidili/navigator/hi_navigator.dart';
 import 'package:flutter_dilidili/util/string_util.dart';
 import 'package:flutter_dilidili/widget/appbar.dart';
 import 'package:flutter_dilidili/widget/login_button.dart';
@@ -8,8 +9,7 @@ import 'package:flutter_dilidili/widget/login_effect.dart';
 import 'package:flutter_dilidili/widget/login_input.dart';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({Key? key, this.onJumptoLogin}) : super(key: key);
-  final VoidCallback? onJumptoLogin;
+  const RegistrationPage({Key? key}) : super(key: key);
 
   @override
   _RegiState createState() => _RegiState();
@@ -26,7 +26,9 @@ class _RegiState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar('register', 'login', widget.onJumptoLogin!),
+      appBar: appBar('register', 'login', () {
+        HiNavigator.getNaviatorInstance.onJumpTo(RouteStatus.login);
+      }),
       body: Container(
         child: ListView(
           children: [
@@ -118,9 +120,6 @@ class _RegiState extends State<RegistrationPage> {
       print(result);
       if (result['code'] == 0) {
         print('success');
-        if (widget.onJumptoLogin != null) {
-          widget.onJumptoLogin!;
-        }
       }
     } on NeedAuth catch (e) {
       print(e.message);

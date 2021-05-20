@@ -1,183 +1,166 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dilidili/http/core/hi_net.dart';
+import 'package:flutter_dilidili/model/video_model.dart';
 import 'package:flutter_dilidili/page/login_page.dart';
 import 'package:flutter_dilidili/page/registration_page.dart';
+import 'package:flutter_dilidili/page/video_detail_page.dart';
 import 'package:flutter_dilidili/requset/notice_request.dart';
 import 'package:flutter_dilidili/util/color.dart';
+import 'package:flutter_dilidili/util/toast.dart';
 
 import 'db/hi_cache.dart';
 import 'http/core/hi_error.dart';
 import 'http/dao/login_dao.dart';
+import 'navigator/hi_navigator.dart';
+import 'page/home_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(BiliApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class BiliApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    HiCache.preInit();
-    return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // Try running your application with "flutter run". You'll see the
-            // application has a blue toolbar. Then, without quitting the app, try
-            // changing the primarySwatch below to Colors.green and then invoke
-            // "hot reload" (press "r" in the console where you ran "flutter run",
-            // or simply save your changes to "hot reload" in a Flutter IDE).
-            // Notice that the counter didn't reset back to zero; the application
-            // is not restarted.
-            primarySwatch: white),
-        home: LoginPage());
-    // home: RegistrationPage(
-    //   onJumptoLogin: () {},
-    // ));
-  }
+  _BiliAppState createState() => _BiliAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String? title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    HiCache.preInit();
-  }
-
-  void _incrementCounter() {
-    //test2();
-    //testLogin();
-    //test2();
-    testNotice();
-    // setState(() {
-    //   // This call to setState tells the Flutter framework that something has
-    //   // changed in this State, which causes it to rerun the build method below
-    //   // so that the display can reflect the updated values. If we changed
-    //   // _counter without calling setState(), then the build method would not be
-    //   // called again, and so nothing would appear to happen.
-    //   _counter++;
-    // });
-  }
-
-  void testLogin() async {
-    try {
-      dynamic result = await LoginDao.login("test", "rootroot");
-
-      print(result);
-      //var result2 = await LoginDao.login("test", "rootroot");
-      //print(result2);
-    } on NeedAuth catch (e) {
-      print(e.message);
-    } on NeedLogin catch (e) {
-      print(e.message);
-    } on HiNetError catch (e) {
-      print(e.message);
-    }
-  }
-
-  void testNotice() async {
-    try {
-      dynamic notice = await Hinet.gethinetInstance.fire(NoticeRequest());
-      print(notice);
-    } on NeedAuth catch (e) {
-      print(e.message);
-    } on NeedLogin catch (e) {
-      print(e.message);
-    } on HiNetError catch (e) {
-      print(e.message);
-    }
-  }
-
-  void test2() async {
-    var value = await LoginDao.getBoardingPass();
-    print(value);
-  }
+class _BiliAppState extends State<BiliApp> {
+  final BiliRouteDelegate _routeDelegate = BiliRouteDelegate();
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title!),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    return FutureBuilder<HiCache>(
+      future: HiCache.preInit(),
+      builder: (context, snapshot) {
+        dynamic homeWidget = snapshot.connectionState == ConnectionState.done
+            ? Router(
+                routerDelegate: _routeDelegate,
+              )
+            : Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+        return MaterialApp(
+          home: homeWidget,
+          theme: ThemeData(primarySwatch: white),
+        );
+      },
     );
   }
 }
 
-class BiliRouteInformationParser extends RouteInformationParser<BiliRouthPath> {
-  @override
-  Future<BiliRouthPath> parseRouteInformation(
-      RouteInformation routeInformation) async {
-    throw UnimplementedError();
-  }
+///
+// class BiliRouteInformationParser extends RouteInformationParser<BiliRoutePath> {
+//   @override
+//   Future<BiliRoutePath> parseRouteInformation(
+//       RouteInformation routeInformation) async {
+//     final uri = Uri.parse(routeInformation.location!);
+//     print(uri);
+//     if (uri.pathSegments.isEmpty) {
+//       return BiliRoutePath.home();
+//     }
+//     return BiliRoutePath.detail();
+//   }
+// }
+
+///
+class BiliRoutePath {
+  BiliRoutePath.home() : location = '/';
+  BiliRoutePath.detail() : location = '/detail';
+  final String location;
 }
 
-class BiliRouthPath {
-  BiliRouthPath.home() : location = '/';
-  BiliRouthPath.detail() : location = '/detail';
-  final String location;
+///
+class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<BiliRoutePath> {
+  ///
+  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    HiNavigator.getNaviatorInstance
+        .registerRouteJump(RouteJumpListener(onjumpTo: (routeStatus, {args}) {
+      _routeStatus = routeStatus;
+      if (routeStatus == RouteStatus.detail) {
+        videoModel = args!['videoMo'];
+      }
+      notifyListeners();
+    }));
+  }
+
+  @override
+  final GlobalKey<NavigatorState> navigatorKey;
+  List<MaterialPage<dynamic>> pages = <MaterialPage<dynamic>>[];
+  RouteStatus _routeStatus = RouteStatus.home;
+
+  ///
+  VideoModel? videoModel;
+
+  @override
+  Widget build(BuildContext context) {
+    dynamic index = getPageIndex(pages, routeStatus!);
+    List<MaterialPage<dynamic>> tempPages = pages;
+    if (index != -1) {
+      tempPages = tempPages.sublist(0, index);
+    }
+
+    dynamic page;
+
+    if (routeStatus == RouteStatus.home) {
+      pages.clear();
+      page = pageWrap((HomePage()));
+    } else if (routeStatus == RouteStatus.detail) {
+      page = pageWrap(VideoDetailPage(
+        videoModel: videoModel,
+      ));
+    } else if (routeStatus == RouteStatus.registation) {
+      page = pageWrap(RegistrationPage());
+    } else if (routeStatus == RouteStatus.login) {
+      page = pageWrap(LoginPage());
+    }
+
+    tempPages = [...tempPages, page];
+    HiNavigator.getNaviatorInstance.notify(tempPages, pages);
+    pages = tempPages;
+
+    return WillPopScope(
+        child: Navigator(
+          key: navigatorKey,
+          pages: pages,
+          onPopPage: (Route<dynamic> route, dynamic result) {
+            if (route.settings is MaterialPage) {
+              if ((route.settings as MaterialPage).child is LoginPage) {
+                if (!hasLogin) {
+                  showWarnToast("Plase login");
+                  return false;
+                }
+              }
+            }
+            if (!route.didPop(result)) {
+              return false;
+            }
+            dynamic tempPages = [...pages];
+            pages.removeLast();
+            HiNavigator.getNaviatorInstance.notify(pages, tempPages);
+            return true;
+          },
+        ),
+        onWillPop: () async {
+          return !await navigatorKey.currentState!.maybePop();
+        });
+  }
+
+  ///
+  RouteStatus? get routeStatus {
+    if (_routeStatus != RouteStatus.registation && hasLogin) {
+      return _routeStatus = RouteStatus.registation;
+    } else if (videoModel != null) {
+      return _routeStatus = RouteStatus.detail;
+    } else {
+      return _routeStatus;
+    }
+  }
+
+  ///
+  bool get hasLogin => LoginDao.getBoardingPass() != null;
+
+  @override
+  Future<void> setNewRoutePath(BiliRoutePath configuration) async {}
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dilidili/http/core/hi_error.dart';
 import 'package:flutter_dilidili/http/dao/login_dao.dart';
+import 'package:flutter_dilidili/navigator/hi_navigator.dart';
 import 'package:flutter_dilidili/util/string_util.dart';
 import 'package:flutter_dilidili/util/toast.dart';
 import 'package:flutter_dilidili/widget/appbar.dart';
@@ -9,6 +10,10 @@ import 'package:flutter_dilidili/widget/login_effect.dart';
 import 'package:flutter_dilidili/widget/login_input.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({
+    Key? key,
+  }) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -22,7 +27,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar('mima', 'zhuche', () {}),
+      appBar: appBar('mima', 'zhuche', () {
+        HiNavigator.getNaviatorInstance.onJumpTo(RouteStatus.registation);
+      }),
       body: Container(
         child: ListView(
           children: <Widget>[
@@ -80,8 +87,9 @@ class _LoginPageState extends State<LoginPage> {
       print(result);
       if (result['code'] == 0) {
         showToast('success');
+        HiNavigator.getNaviatorInstance.onJumpTo(RouteStatus.home);
       } else {
-        showWarnToast(result['msg']);
+        showWarnToast(result['msg'].toString());
       }
     } on NeedAuth catch (e) {
       print(e.message);

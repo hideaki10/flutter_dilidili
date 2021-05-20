@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-appBar(String title, String rightTitle, VoidCallback rightButtonClick) {
+PreferredSizeWidget appBar(
+    String title, String rightTitle, VoidCallback rightButtonClick) {
   return AppBar(
     centerTitle: false,
     titleSpacing: 0,
